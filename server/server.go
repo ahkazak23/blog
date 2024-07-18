@@ -5,8 +5,18 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func main() {
+func init() {
 	database.ConnectDB()
+}
+
+func main() {
+
+	sqlDB, err := database.DBConn.DB()
+
+	if err != nil {
+		panic("Error in sql connection.")
+	}
+	defer sqlDB.Close()
 
 	app := fiber.New()
 

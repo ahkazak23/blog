@@ -2,10 +2,18 @@ package main
 
 import (
 	"blog/database"
+	"blog/router"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/joho/godotenv"
+	"log"
 )
 
 func init() {
+	if err := godotenv.Load(".env.prod"); err != nil {
+		log.Fatal("Error in loading .env file.")
+	}
+
 	database.ConnectDB()
 }
 
@@ -20,10 +28,15 @@ func main() {
 
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"message": "Hello World!"})
-		return c.SendString("Fang Yuan")
-	})
+	app.Static("/static", "./static")
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
+
+	router.SetupRoutes(app)
+
 	app.Listen(":8000")
 
 }

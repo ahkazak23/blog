@@ -6,12 +6,18 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"log"
+	"os"
 )
 
 var DBConn *gorm.DB
 
 func ConnectDB() {
-	dsn := "root:@tcp(127.0.0.1:3306)/blog?charset=utf8mb4&parseTime=True&loc=Local"
+
+	host := os.Getenv("db_host")
+	dbUser := os.Getenv("db_user")
+	dbName := os.Getenv("db_name")
+
+	dsn := dbUser + ":@tcp(" + host + ":3306)/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),

@@ -3,9 +3,13 @@ import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { setUser } from "../services/store/reducers/AuthSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
 	const navigate = useNavigate();
+
+	const dispatch = useDispatch()
 
 	const {
 		register,
@@ -26,6 +30,8 @@ const Login = () => {
 				console.log(data);
 
 				localStorage.setItem("token", data.token);
+
+				dispatch(setUser(data.user));
 
 				navigate("/", {state: data.msg});
 			}

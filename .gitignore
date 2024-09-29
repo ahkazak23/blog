@@ -2,6 +2,7 @@
 logs
 *.log
 
+
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
@@ -27,6 +28,7 @@ out
 .nuxt
 dist
 
+package-lock.json
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode

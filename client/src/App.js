@@ -36,10 +36,12 @@ function App() {
     const updateToken = async () => {
         try {
             const apiUrl = `${process.env.REACT_APP_AUTH_API}/private/refreshtoken`;
+            const currentToken = window.localStorage.getItem("token");
 
             const response = await axios.get(apiUrl, {
                 headers: {
-                    token: window.localStorage.getItem("token"),
+                    Authorization: 'Bearer ' + currentToken,
+                    token: currentToken,
                 },
             });
 
@@ -50,10 +52,8 @@ function App() {
             }
         } catch (error) {
             console.log(error);
+            window.localStorage.removeItem("token");
         }
-        window.localStorage.removeItem("token");
-
-        console.log("Inside update token");
     };
 
     return (

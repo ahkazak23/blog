@@ -3,12 +3,55 @@ package controller
 import (
 	"blog/database"
 	"blog/model"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"log"
+	"mime/multipart"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
+
+const maxUploadSize = int64(5 * 1024 * 1024)
+
+var allowedUploadExtensions = map[string]bool{
+	".jpg":  true,
+	".jpeg": true,
+	".png":  true,
+	".gif":  true,
+	".webp": true,
+}
+
+func saveUpload(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
+	if file == nil || file.Size == 0 {
+		return "", nil
+	}
+
+	if file.Size > maxUploadSize {
+		return "", fmt.Errorf("file exceeds %d bytes", maxUploadSize)
+	}
+
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	if !allowedUploadExtensions[ext] {
+		return "", fmt.Errorf("unsupported file extension")
+	}
+
+	uploadDir := filepath.Join(".", "static", "uploads")
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		return "", err
+	}
+
+	safeFilename := fmt.Sprintf("%s%s", uuid.NewString(), ext)
+	filename := filepath.Join(uploadDir, safeFilename)
+
+	if err := c.SaveFile(file, filename); err != nil {
+		return "", err
+	}
+
+	return filepath.ToSlash(filename), nil
+}
 
 // BlogList list blogs
 func BlogList(c *fiber.Ctx) error {
@@ -70,29 +113,19 @@ func BlogCreate(c *fiber.Ctx) error {
 		context["msg"] = "Something went wrong."
 	}
 
-	// Ensure the directory exists
-	uploadDir := filepath.Join(".", "static", "uploads")
-	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-		log.Println("Error creating upload directory:", err)
-		return c.Status(500).SendString("Error creating upload directory")
-	}
-
 	// File upload
 	file, err := c.FormFile("file")
-	if err != nil {
+	if err != nil && err != fiber.ErrBadRequest {
 		log.Println("Error in file upload:", err)
-		return c.Status(500).SendString("File upload error")
+		return c.Status(400).SendString("File upload error")
 	}
 
-	if file.Size > 0 {
-		// Save the file with an absolute path
-		filename := filepath.Join(uploadDir, file.Filename)
-		if err := c.SaveFile(file, filename); err != nil {
+	if file != nil {
+		filename, err := saveUpload(c, file)
+		if err != nil {
 			log.Println("Error in file uploading:", err)
-			return c.Status(500).SendString("Error saving file")
+			return c.Status(400).SendString("Invalid file upload")
 		}
-
-		// Set image path to the struct
 		record.Image = filename
 	}
 
@@ -146,12 +179,11 @@ func BlogUpdate(c *fiber.Ctx) error {
 	}
 
 	if file != nil && file.Size > 0 {
-		filename := "static/uploads/" + file.Filename
-
-		if err := c.SaveFile(file, filename); err != nil {
+		filename, err := saveUpload(c, file)
+		if err != nil {
 			log.Println("Error in file uploading...", err)
 			context["status"] = "error"
-			context["msg"] = "Error in file uploading."
+			context["msg"] = "Invalid file upload."
 			c.Status(400)
 			return c.JSON(context)
 		}

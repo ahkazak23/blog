@@ -48,9 +48,12 @@ const Edit = () => {
 		data.image = null;
 		try {
 			const apiUrl = process.env.REACT_APP_API_ROOT + "/" + params.id;
+			const token = window.localStorage.getItem("token");
 			const response = await axios.put(apiUrl, data, {
 				headers: {
 					"Content-Type": "multipart/form-data",
+					Authorization: "Bearer " + token,
+					token: token,
 				}
 			});
 

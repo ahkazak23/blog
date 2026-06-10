@@ -18,13 +18,15 @@ func SetupRoutes(app *fiber.App) {
 
 	app.Get("/", controller.BlogList)
 	app.Get("/:id", controller.BlogDetail)
-	app.Post("/", controller.BlogCreate)
-	app.Put("/:id", controller.BlogUpdate)
-	app.Delete("/:id", controller.BlogDelete)
 
 	app.Post("/login", controller.Login)
 	app.Post("/register", controller.Register)
 	// r.GET("/logout", controller.Logout)
+
+	protectedBlogs := app.Group("/", middleware.Authenticate)
+	protectedBlogs.Post("/", controller.BlogCreate)
+	protectedBlogs.Put("/:id", controller.BlogUpdate)
+	protectedBlogs.Delete("/:id", controller.BlogDelete)
 
 	private := app.Group("/private")
 

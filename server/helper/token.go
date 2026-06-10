@@ -38,7 +38,6 @@ func GenerateToken(user model.User) (string, error) {
 		user.Email,
 		user.ID,
 		jwt.RegisteredClaims{
-			Subject:   fmt.Sprintf("%d", user.ID),
 			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
 			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(time.Minute * 15)),
 		},
@@ -49,7 +48,7 @@ func GenerateToken(user model.User) (string, error) {
 	t, err := token.SignedString(secret)
 
 	if err != nil {
-		log.Println("Error in token singing.", err)
+		log.Println("Error in token signing.", err)
 		return "", err
 	}
 
@@ -73,6 +72,7 @@ func ValidateToken(clientToken string) (claims *CustomClaims, msg string) {
 	})
 
 	if err != nil {
+		log.Printf("Token validation failed: %v", err)
 		msg = "invalid token"
 		return
 	}

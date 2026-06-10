@@ -6,11 +6,13 @@ import (
 	"strings"
 )
 
+const bearerPrefix = "bearer "
+
 func Authenticate(c *fiber.Ctx) error {
 	token := strings.TrimSpace(c.Get("token"))
 	authHeader := strings.TrimSpace(c.Get("Authorization"))
-	if strings.HasPrefix(strings.ToLower(authHeader), "bearer ") {
-		token = strings.TrimSpace(authHeader[7:])
+	if strings.HasPrefix(strings.ToLower(authHeader), bearerPrefix) {
+		token = strings.TrimSpace(authHeader[len(bearerPrefix):])
 	}
 
 	if token == "" {

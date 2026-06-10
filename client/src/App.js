@@ -41,7 +41,6 @@ function App() {
             const response = await axios.get(apiUrl, {
                 headers: {
                     Authorization: 'Bearer ' + currentToken,
-                    token: currentToken,
                 },
             });
 

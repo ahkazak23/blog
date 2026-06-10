@@ -27,7 +27,6 @@ const Add = () => {
 				headers: {
 					"Content-Type": "multipart/form-data",
 					Authorization: "Bearer " + token,
-					token: token,
 				},
 			});
 

@@ -15,7 +15,6 @@ const Delete = () => {
 			const response = await axios.delete(apiUrl, {
 				headers: {
 					Authorization: "Bearer " + token,
-					token: token,
 				},
 			});
 

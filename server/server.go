@@ -6,18 +6,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 	"strings"
 )
 
 func init() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Println("No .env file loaded, using environment variables.")
-	}
-	if err := godotenv.Load(".env.prod"); err != nil {
-		log.Println("No .env.prod file loaded, using environment variables.")
-	}
+	_ = godotenv.Load(".env")
 
 	database.ConnectDB()
 }

@@ -3,11 +3,13 @@ package controller
 import (
 	"blog/database"
 	"blog/model"
+	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"log"
 	"mime/multipart"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -115,7 +117,7 @@ func BlogCreate(c *fiber.Ctx) error {
 
 	// File upload
 	file, err := c.FormFile("file")
-	if err != nil && err != fiber.ErrBadRequest {
+	if err != nil && !errors.Is(err, http.ErrMissingFile) && !errors.Is(err, fiber.ErrBadRequest) {
 		log.Println("Error in file upload:", err)
 		return c.Status(400).SendString("File upload error")
 	}
@@ -169,7 +171,7 @@ func BlogUpdate(c *fiber.Ctx) error {
 	// File upload
 	file, err := c.FormFile("file")
 
-	if err != nil && err != fiber.ErrBadRequest {
+	if err != nil && !errors.Is(err, http.ErrMissingFile) && !errors.Is(err, fiber.ErrBadRequest) {
 		// Handle error other than bad request
 		log.Println("Error in file upload.", err)
 		context["status"] = "error"

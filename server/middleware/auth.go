@@ -3,19 +3,23 @@ package middleware
 import (
 	"blog/helper"
 	"github.com/gofiber/fiber/v2"
-	"log"
+	"strings"
 )
 
+const bearerPrefix = "bearer "
+
 func Authenticate(c *fiber.Ctx) error {
-	token := c.Get("token")
+	token := strings.TrimSpace(c.Get("token"))
+	authHeader := strings.TrimSpace(c.Get("Authorization"))
+	if strings.HasPrefix(strings.ToLower(authHeader), bearerPrefix) {
+		token = strings.TrimSpace(authHeader[len(bearerPrefix):])
+	}
 
 	if token == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Token not present."})
 	}
 
 	claims, msg := helper.ValidateToken(token)
-
-	log.Println(claims)
 
 	if msg != "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": msg})

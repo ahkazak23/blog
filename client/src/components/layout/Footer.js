@@ -30,6 +30,7 @@ const Footer = () => {
               <div className="social-links pt-1">
                 <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     href="https://www.youtube.com/@growyourskill1"
                     className="youtube"
                     title="Connect on Youtube"
@@ -38,6 +39,7 @@ const Footer = () => {
                 </a>
                 <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     href="https://github.com/neerajbg"
                     className="Github"
                     title="Connect on Github"

@@ -21,10 +21,12 @@ const Add = () => {
 
 		try {
 			const apiUrl = process.env.REACT_APP_API_ROOT;
+			const token = window.localStorage.getItem("token");
 
 			const response = await axios.post(apiUrl, data, {
 				headers: {
 					"Content-Type": "multipart/form-data",
+					Authorization: "Bearer " + token,
 				},
 			});
 

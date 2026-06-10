@@ -10,8 +10,13 @@ const Delete = () => {
 	const handleDelete = async () => {
 		try {
 			const apiUrl = process.env.REACT_APP_API_ROOT + "/" + params.id;
+			const token = window.localStorage.getItem("token");
 
-			const response = await axios.delete(apiUrl);
+			const response = await axios.delete(apiUrl, {
+				headers: {
+					Authorization: "Bearer " + token,
+				},
+			});
 
 			if (response.status === 200) {
 				navigate("/", {
